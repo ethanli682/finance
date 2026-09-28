@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+/*
+  Ledger: the visual language of an accountant's columnar pad.
+  Pale green-ruled paper, bottle-green ink, carbon-copy blue for anything you can act on.
+*/
+@theme {
+  --color-paper: #f2f5f0;
+  --color-sheet: #f8faf6; /* raised surfaces: dropdowns, sticky header */
+  --color-rule: #c5d6c1;
+  --color-rule-strong: #93b18f;
+  --color-tint: #e5eee2;
+  --color-ink: #17382d;
+  --color-ink-muted: #56705f;
+  --color-carbon: #34489a;
+  --color-up: #1e7549;
+  --color-down: #a8352c;
+
+  --font-sans: "Public Sans Variable", "Public Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale after Bringhurst's classic sizes: 12 14 16 18 21 24 36 48 60 72 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.3125rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+  --text-5xl: 3.75rem;
+  --text-6xl: 4.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #0f1d18;
+    --color-sheet: #142620;
+    --color-rule: #2a4238;
+    --color-rule-strong: #46665a;
+    --color-tint: #1a3029;
+    --color-ink: #dce8e0;
+    --color-ink-muted: #93aa9f;
+    --color-carbon: #a9b8f5;
+    --color-up: #62c48f;
+    --color-down: #f08c80;
+  }
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--color-paper);
+  line-height: 1.5;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-carbon) 22%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-carbon);
+  outline-offset: 2px;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* The wordmark sits on a double rule: the accountant's mark for a final total. */
+.double-rule {
+  border-bottom: 3px double currentColor;
+  padding-bottom: 1px;
+}
+
+/* ------------------------------------------------------------------------ */
+/* Ledger table                                                             */
+/* ------------------------------------------------------------------------ */
+
+.ledger {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: var(--text-sm);
+}
+
+.ledger th,
+.ledger td {
+  padding: 0.45rem 0.9rem;
+  border-bottom: 1px solid var(--color-rule);
+  white-space: nowrap;
+}
+
+.ledger .num {
+  text-align: right;
+  border-left: 1px solid var(--color-rule);
+  min-width: 7.5rem;
+}
+
+/* Description column, closed off by the double rule every columnar pad has. */
+.ledger .desc {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background: var(--color-paper);
+  border-right: 3px double var(--color-rule-strong);
+  min-width: 11rem;
+}
+
+@media (min-width: 768px) {
+  .ledger .desc {
+    min-width: 17rem;
+  }
+}
+
+.ledger thead th {
+  vertical-align: bottom;
+  font-weight: 650;
+  border-bottom: 1px solid var(--color-rule-strong);
+  padding-top: 0.25rem;
+}
+
+.ledger thead .period-end {
+  display: block;
+  font-weight: 400;
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.ledger tbody tr:hover > * {
+  background: var(--color-tint);
+}
+
+.ledger .indent-1 {
+  padding-left: 1.9rem;
+}
+
+.ledger .missing {
+  color: var(--color-ink-muted);
+}
+
+/* Accounting convention: a single rule above a subtotal, a double rule under a total. */
+.ledger .fig {
+  display: block;
+}
+
+.ledger tr.subtotal > * {
+  font-weight: 600;
+}
+
+.ledger tr.subtotal .fig {
+  border-top: 1px solid var(--color-ink);
+  padding-top: 1px;
+}
+
+.ledger tr.total > * {
+  font-weight: 700;
+}
+
+.ledger tr.total .fig {
+  border-top: 1px solid var(--color-ink);
+  border-bottom: 3px double var(--color-ink);
+  padding-block: 1px;
+}
+
+/* Per-share and share-count rows follow the statement proper, set apart. */
+.ledger tr.memo-start > * {
+  border-top: 1px solid var(--color-rule-strong);
+}
+
+.ledger tr.memo > * {
+  color: var(--color-ink-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-busy {
+    transition: opacity 120ms ease-out;
+  }
+}
