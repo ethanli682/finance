@@ -77,3 +77,24 @@ export type PriceBar = {
 };
 
 export type PriceRange = "1m" | "3m" | "6m" | "1y" | "5y" | "max";
+
+export type FcfYear = {
+  label: string;
+  value: number;
+};
+
+export type ValuationInputs = {
+  ticker: string;
+  name: string;
+  price: number | null;
+  price_as_of: string | null;
+  shares: number | null;
+  free_cash_flow: number | null;
+  free_cash_flow_basis: string | null;
+  fcf_history: FcfYear[];
+  fcf_cagr: number | null;
+  cash: number | null;
+  cash_basis: string | null;
+  debt: number | null;
+  debt_basis: string | null;
+};

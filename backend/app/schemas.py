@@ -73,3 +73,24 @@ class PriceBar(BaseModel):
     low: float | None
     close: float
     volume: int | None
+
+
+class FcfYear(BaseModel):
+    label: str
+    value: float
+
+
+class ValuationInputs(BaseModel):
+    ticker: str
+    name: str
+    price: float | None
+    price_as_of: date | None
+    shares: float | None
+    free_cash_flow: float | None
+    free_cash_flow_basis: str | None
+    fcf_history: list[FcfYear]
+    fcf_cagr: float | None
+    cash: float | None
+    cash_basis: str | None
+    debt: float | None
+    debt_basis: str | None

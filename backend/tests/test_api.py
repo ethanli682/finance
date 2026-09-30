@@ -147,6 +147,20 @@ def test_balance_sheet(client):
     assert rows["total_liabilities"]["values"] == [500, 440]
 
 
+def test_valuation_inputs(client):
+    body = client.get("/api/companies/acme/valuation-inputs").json()
+    assert body["ticker"] == "ACME"
+    assert body["shares"] == 99
+    # TTM operating cash flow less capex: (35 + 35 + 40 + 45) - (5 + 5 + 5 + 6)
+    assert body["free_cash_flow"] == 134
+    assert body["free_cash_flow_basis"] == "TTM"
+    assert body["fcf_history"] == [{"label": "FY2024", "value": 120}]
+    assert body["fcf_cagr"] is None  # one year isn't a trend
+    assert body["debt"] == 186
+    assert body["debt_basis"] == "Dec 31, 2024"
+    assert body["cash"] is None
+
+
 def test_prices_range(client):
     bars = client.get("/api/companies/ACME/prices", params={"range": "1m"}).json()
     assert bars[-1]["date"] == LAST_DAY.isoformat()

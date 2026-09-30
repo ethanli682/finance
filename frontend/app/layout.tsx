@@ -3,7 +3,7 @@ import "@fontsource-variable/public-sans/wght.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Ledger", template: "%s | Ledger" },
+  title: { default: "Axon", template: "%s | Axon" },
   description: "Look up a public company's stock price and financial statements.",
 };
 

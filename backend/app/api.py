@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException, Query
 from . import ingest
 from . import repository as repo
 from .db import engine
-from .metrics import build_statement, key_metrics
-from .schemas import CompanyOverview, PriceBar, PriceSummary, SearchResult, Statement
+from .metrics import build_statement, key_metrics, valuation_inputs
+from .schemas import CompanyOverview, PriceBar, PriceSummary, SearchResult, Statement, ValuationInputs
 
 router = APIRouter(prefix="/api")
 
@@ -109,6 +109,22 @@ def financials(
         facts = repo.get_facts(conn, company["cik"], statement=statement, period_type=period)
     table = build_statement(facts, statement, period, limit or (10 if period == "annual" else 12))
     return Statement(ticker=company["ticker"], statement=statement, period=period, **table)
+
+
+@router.get("/companies/{ticker}/valuation-inputs", response_model=ValuationInputs)
+def valuation(ticker: str):
+    company = _company_or_404(ticker)
+    _ensure_fundamentals(company)
+    ingest.ensure_prices(company)
+    with engine.connect() as conn:
+        company = repo.get_company(conn, company["ticker"])
+        facts = repo.get_facts(conn, company["cik"])
+        summary = repo.price_summary(conn, company["ticker"])
+    return ValuationInputs(
+        ticker=company["ticker"],
+        name=company["entity_name"] or company["name"],
+        **valuation_inputs(facts, summary, company["shares_outstanding"]),
+    )
 
 
 @router.get("/companies/{ticker}/prices", response_model=list[PriceBar])

@@ -2,7 +2,15 @@
 import "server-only";
 import { cache } from "react";
 
-import type { CompanyOverview, PeriodKind, PriceBar, PriceRange, Statement, StatementKind } from "./types";
+import type {
+  CompanyOverview,
+  PeriodKind,
+  PriceBar,
+  PriceRange,
+  Statement,
+  StatementKind,
+  ValuationInputs,
+} from "./types";
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
@@ -42,4 +50,8 @@ export function getStatement(ticker: string, statement: StatementKind, period: P
 
 export function getPrices(ticker: string, range: PriceRange) {
   return get<PriceBar[]>(`/api/companies/${encodeURIComponent(ticker)}/prices?range=${range}`);
+}
+
+export function getValuationInputs(ticker: string) {
+  return get<ValuationInputs>(`/api/companies/${encodeURIComponent(ticker)}/valuation-inputs`);
 }

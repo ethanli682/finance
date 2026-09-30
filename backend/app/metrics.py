@@ -134,6 +134,16 @@ def _metric(key: str, label: str, value: float | None, fmt: str, basis: str | No
     return {"key": key, "label": label, "value": value, "format": fmt, "basis": basis}
 
 
+def _share_count(f: _Frames, shares_outstanding: float | None) -> float | None:
+    """Cover-page shares outstanding, else the latest diluted weighted average."""
+    if shares_outstanding:
+        return shares_outstanding
+    if not f.quarterly.empty and "shares_diluted" in f.quarterly:
+        diluted = f.quarterly["shares_diluted"].dropna()
+        return float(diluted.iloc[-1]) if not diluted.empty else None
+    return None
+
+
 def key_metrics(
     facts: list[dict[str, Any]], price: dict[str, Any] | None, shares_outstanding: float | None
 ) -> list[dict[str, Any]]:
@@ -141,10 +151,7 @@ def key_metrics(
     out: list[dict[str, Any]] = []
     last_price = price["last"] if price else None
 
-    shares = shares_outstanding
-    if not shares and not f.quarterly.empty and "shares_diluted" in f.quarterly:
-        diluted = f.quarterly["shares_diluted"].dropna()
-        shares = float(diluted.iloc[-1]) if not diluted.empty else None
+    shares = _share_count(f, shares_outstanding)
     market_cap = last_price * shares if last_price and shares else None
     out.append(_metric("market_cap", "Market cap", market_cap, "currency", "Latest close" if market_cap else None))
 
@@ -188,3 +195,48 @@ def key_metrics(
     out.append(_metric("debt_to_equity", "Debt to equity", de, "ratio", leverage[1] if de is not None else None))
 
     return out
+
+
+def valuation_inputs(
+    facts: list[dict[str, Any]], price: dict[str, Any] | None, shares_outstanding: float | None
+) -> dict[str, Any]:
+    """Starting figures for a discounted cash flow model. Any of them may be missing."""
+    f = _Frames(facts)
+
+    fcf = f.flows("free_cash_flow")
+
+    history: list[dict[str, Any]] = []
+    if not f.annual.empty and "free_cash_flow" in f.annual:
+        series = f.annual["free_cash_flow"].dropna().iloc[-6:]
+        history = [
+            {"label": f"FY{f.fiscal_year.get(end, end.year)}", "value": float(v)} for end, v in series.items()
+        ]
+
+    # Compound growth only means something between two positive years.
+    fcf_cagr = None
+    if len(history) >= 2 and history[0]["value"] > 0 and history[-1]["value"] > 0:
+        fcf_cagr = (history[-1]["value"] / history[0]["value"]) ** (1 / (len(history) - 1)) - 1
+
+    cash = f.latest_balance("cash")
+    investments = f.latest_balance("short_term_investments")
+    debt = f.latest_balance("long_term_debt")
+    # Investments only count when reported on the same date as cash.
+    cash_total = None
+    if cash:
+        cash_total = cash[0][0]
+        if investments and investments[1] == cash[1]:
+            cash_total += investments[0][0]
+
+    return {
+        "price": price["last"] if price else None,
+        "price_as_of": price["as_of"] if price else None,
+        "shares": _share_count(f, shares_outstanding),
+        "free_cash_flow": fcf[0][0] if fcf else None,
+        "free_cash_flow_basis": fcf[1] if fcf else None,
+        "fcf_history": history,
+        "fcf_cagr": fcf_cagr,
+        "cash": cash_total,
+        "cash_basis": cash[1] if cash else None,
+        "debt": debt[0][0] if debt else None,
+        "debt_basis": debt[1] if debt else None,
+    }
