@@ -114,7 +114,19 @@ function Company({
 
       <PriceChart ticker={overview.ticker} initialRange="1y" initialBars={prices} />
 
-      {overview.has_financials && <KeyFigures metrics={overview.metrics} />}
+      {overview.has_financials && (
+        <>
+          <KeyFigures metrics={overview.metrics} />
+          <p className="mt-4">
+            <Link
+              href={`/valuation?ticker=${encodeURIComponent(overview.ticker)}`}
+              className="font-semibold text-carbon underline decoration-rule-strong underline-offset-4 hover:decoration-carbon"
+            >
+              Value {overview.ticker} with a DCF or reverse DCF
+            </Link>
+          </p>
+        </>
+      )}
 
       <Statements ticker={overview.ticker} initial={statement} />
 

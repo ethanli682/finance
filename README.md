@@ -67,6 +67,7 @@ To add or fix a line item, edit `concepts.py`; the API and frontend pick it up a
 | `GET /api/companies/{ticker}` | Name, industry, latest price, and key figures (TTM revenue, margins, P/E, ROE, and more) |
 | `GET /api/companies/{ticker}/financials?statement=income\|balance\|cashflow&period=annual\|quarterly` | A statement table, newest period first |
 | `GET /api/companies/{ticker}/prices?range=1m\|3m\|6m\|1y\|5y\|max` | Daily bars |
+| `GET /api/companies/{ticker}/valuation-inputs` | Starting figures for the DCF calculator: free cash flow (TTM or latest year), its annual history and trend, cash, debt, shares, and price |
 
 Interactive docs are at http://localhost:8000/docs.
 
@@ -102,9 +103,10 @@ frontend/
   app/
     page.tsx                  home and search
     stock/[ticker]/page.tsx   company page
+    valuation/page.tsx        DCF and reverse DCF calculator (?ticker= prefills it)
     api/[...path]/route.ts    proxy to the backend
-  components/                 SearchBox, PriceChart, Statements, LedgerTable, KeyFigures
-  lib/                        types, formatting, API helpers
+  components/                 SearchBox, PriceChart, Statements, LedgerTable, KeyFigures, DcfCalculator
+  lib/                        types, formatting, API helpers, dcf.ts (valuation math)
 ```
 
 ## Before you launch

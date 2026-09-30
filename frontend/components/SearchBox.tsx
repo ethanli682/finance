@@ -9,11 +9,14 @@ import type { SearchResult } from "@/lib/types";
 type Props = {
   variant: "hero" | "compact";
   autoFocus?: boolean;
+  // Where choosing a company goes: its stock page, or the valuation calculator.
+  destination?: "stock" | "valuation";
+  placeholder?: string;
 };
 
 const DEBOUNCE_MS = 140;
 
-export function SearchBox({ variant, autoFocus }: Props) {
+export function SearchBox({ variant, autoFocus, destination = "stock", placeholder }: Props) {
   const router = useRouter();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,7 +51,7 @@ export function SearchBox({ variant, autoFocus }: Props) {
 
   // "/" focuses the header search from anywhere on the page.
   useEffect(() => {
-    if (variant !== "compact") return;
+    if (variant !== "compact" || destination !== "stock") return;
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
       if (event.key === "/" && !["INPUT", "TEXTAREA"].includes(target.tagName) && !target.isContentEditable) {
@@ -58,13 +61,17 @@ export function SearchBox({ variant, autoFocus }: Props) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [variant]);
+  }, [variant, destination]);
 
   function go(ticker: string) {
     setOpen(false);
     setQuery("");
     inputRef.current?.blur();
-    router.push(`/stock/${encodeURIComponent(ticker)}`);
+    router.push(
+      destination === "valuation"
+        ? `/valuation?ticker=${encodeURIComponent(ticker)}`
+        : `/stock/${encodeURIComponent(ticker)}`,
+    );
   }
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -109,7 +116,7 @@ export function SearchBox({ variant, autoFocus }: Props) {
         spellCheck={false}
         autoFocus={autoFocus}
         value={query}
-        placeholder={hero ? "Ticker or company" : "Search companies"}
+        placeholder={placeholder ?? (hero ? "Ticker or company" : "Search companies")}
         onChange={(e) => {
           setQuery(e.target.value);
           if (!e.target.value.trim()) setResults([]);
@@ -124,7 +131,7 @@ export function SearchBox({ variant, autoFocus }: Props) {
             : "peer w-full rounded-sm border border-rule-strong bg-sheet py-1.5 pl-3 pr-8 text-sm text-ink placeholder:text-ink-muted focus:border-carbon focus:outline-none"
         }
       />
-      {!hero && !query && (
+      {!hero && !query && destination === "stock" && (
         <kbd
           aria-hidden
           className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-sm border border-rule px-1.5 text-xs text-ink-muted peer-focus:hidden sm:block"
