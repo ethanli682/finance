@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  Ledger: the visual language of an accountant's columnar pad.
+  Axon: the visual language of an accountant's columnar pad.
   Pale green-ruled paper, bottle-green ink, carbon-copy blue for anything you can act on.
 */
 @theme {
@@ -82,10 +82,10 @@ body {
 }
 
 /* ------------------------------------------------------------------------ */
-/* Ledger table                                                             */
+/* Axon table                                                             */
 /* ------------------------------------------------------------------------ */
 
-.ledger {
+.Axon {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
@@ -93,21 +93,21 @@ body {
   font-size: var(--text-sm);
 }
 
-.ledger th,
-.ledger td {
+.Axon th,
+.Axon td {
   padding: 0.45rem 0.9rem;
   border-bottom: 1px solid var(--color-rule);
   white-space: nowrap;
 }
 
-.ledger .num {
+.Axon .num {
   text-align: right;
   border-left: 1px solid var(--color-rule);
   min-width: 7.5rem;
 }
 
 /* Description column, closed off by the double rule every columnar pad has. */
-.ledger .desc {
+.Axon .desc {
   position: sticky;
   left: 0;
   z-index: 1;
@@ -118,67 +118,67 @@ body {
 }
 
 @media (min-width: 768px) {
-  .ledger .desc {
+  .Axon .desc {
     min-width: 17rem;
   }
 }
 
-.ledger thead th {
+.Axon thead th {
   vertical-align: bottom;
   font-weight: 650;
   border-bottom: 1px solid var(--color-rule-strong);
   padding-top: 0.25rem;
 }
 
-.ledger thead .period-end {
+.Axon thead .period-end {
   display: block;
   font-weight: 400;
   font-size: var(--text-xs);
   color: var(--color-ink-muted);
 }
 
-.ledger tbody tr:hover > * {
+.Axon tbody tr:hover > * {
   background: var(--color-tint);
 }
 
-.ledger .indent-1 {
+.Axon .indent-1 {
   padding-left: 1.9rem;
 }
 
-.ledger .missing {
+.Axon .missing {
   color: var(--color-ink-muted);
 }
 
 /* Accounting convention: a single rule above a subtotal, a double rule under a total. */
-.ledger .fig {
+.Axon .fig {
   display: block;
 }
 
-.ledger tr.subtotal > * {
+.Axon tr.subtotal > * {
   font-weight: 600;
 }
 
-.ledger tr.subtotal .fig {
+.Axon tr.subtotal .fig {
   border-top: 1px solid var(--color-ink);
   padding-top: 1px;
 }
 
-.ledger tr.total > * {
+.Axon tr.total > * {
   font-weight: 700;
 }
 
-.ledger tr.total .fig {
+.Axon tr.total .fig {
   border-top: 1px solid var(--color-ink);
   border-bottom: 3px double var(--color-ink);
   padding-block: 1px;
 }
 
 /* Per-share and share-count rows follow the statement proper, set apart. */
-.ledger tr.memo-start > * {
+.Axon tr.memo-start > * {
   border-top: 1px solid var(--color-rule-strong);
 }
 
-.ledger tr.memo > * {
+.Axon tr.memo > * {
   color: var(--color-ink-muted);
 }
 

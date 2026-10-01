@@ -1,4 +1,4 @@
-# Ledger
+# Axon
 
 A barebones stock research site: search any SEC-registered company and read its share price, income statement, balance sheet, and cash flows.
 

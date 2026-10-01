@@ -5,7 +5,7 @@ import { SearchBox } from "./SearchBox";
 export function Wordmark() {
   return (
     <Link href="/" className="text-lg font-extrabold tracking-tight text-ink">
-      <span className="double-rule">Ledger</span>
+      <span className="double-rule">Axon</span>
     </Link>
   );
 }
